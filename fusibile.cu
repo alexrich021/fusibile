@@ -202,11 +202,14 @@ __global__ void fusibile (GlobalState &gs, int ref_camera)
             float4 tmp_normal_and_depth; // first 3 components normal, fourth depth
             tmp_normal_and_depth   = tex2D<float4> (gs.normals_depths[idxCurr], tmp_pt.x+0.5f, tmp_pt.y+0.5f);
             //printf("New depth is %f vs %f\n", tmp_normal_and_depth.w, depth);
+//
+//            const float depth_disp = disparityDepthConversion_cu2                ( camParams.cameras[ref_camera].f, camParams.cameras[ref_camera], camParams.cameras[idxCurr], depth );
+//            const float tmp_normal_and_depth_disp = disparityDepthConversion_cu2 ( camParams.cameras[ref_camera].f, camParams.cameras[ref_camera], camParams.cameras[idxCurr], tmp_normal_and_depth.w );
+//            // First consistency check on depth
+//            if (fabsf(depth_disp - tmp_normal_and_depth_disp) < gs.params->depthThresh) {
 
-            const float depth_disp = disparityDepthConversion_cu2                ( camParams.cameras[ref_camera].f, camParams.cameras[ref_camera], camParams.cameras[idxCurr], depth );
-            const float tmp_normal_and_depth_disp = disparityDepthConversion_cu2 ( camParams.cameras[ref_camera].f, camParams.cameras[ref_camera], camParams.cameras[idxCurr], tmp_normal_and_depth.w );
             // First consistency check on depth
-            if (fabsf(depth_disp - tmp_normal_and_depth_disp) < gs.params->depthThresh) {
+            if (fabsf(depth - tmp_normal_and_depth.w) < gs.params->depthThresh) {
                 //printf("\tFirst consistency test passed!\n");
                 float angle = getAngle_cu (tmp_normal_and_depth, normal); // extract normal
                 if (angle < gs.params->normalThresh)
